@@ -2,10 +2,9 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.security.*;
 import java.util.Arrays;
 
 public class a5 {
@@ -77,7 +76,55 @@ public class a5 {
         }
         return keys;
     }
+
+    public static byte[] encryptData(byte[] data, PublicKey pub) {
+        byte[] encryptedData = null;
+        try {
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding","SunJCE");
+            cipher.init(Cipher.ENCRYPT_MODE, pub);
+            encryptedData =  cipher.doFinal(data);
+        } catch (Exception  ex) {
+            System.err.println("Error xifrant: " + ex);
+        }
+        return encryptedData;
     }
+
+    public static byte[] decryptData (byte[] data, PrivateKey pri) {
+        byte[] decryptedData = null;
+        try {
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding","SunJCE");
+            cipher.init(Cipher.DECRYPT_MODE, pri);
+            decryptedData =  cipher.doFinal(data);
+        } catch (Exception  ex) {
+            System.err.println("Error Desxifrant: " + ex);
+        }
+        return decryptedData;
+    }
+
+    public static KeyStore loadKeyStore(String ksFile, String ksPwd) throws Exception {
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        File f = new File (ksFile);
+        if (f.isFile()) {
+            FileInputStream in = new FileInputStream (f);
+            ks.load(in, ksPwd.toCharArray());
+        }
+        return ks;
+    }
+
+    public static byte[] signData(byte[] data, PrivateKey priv) {
+        byte[] signature = null;
+
+        try {
+            Signature signer = Signature.getInstance("SHA1withRSA");
+            signer.initSign(priv);
+            signer.update(data);
+            signature = signer.sign();
+        } catch (Exception ex) {
+            System.err.println("Error signant les dades: " + ex);
+        }
+        return signature;
+    }
+}
 
 
 
