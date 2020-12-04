@@ -76,9 +76,20 @@ public class Main {
         System.out.println(" ");
         System.out.println("EXERCICI 5");
         System.out.println(" ");
+        System.out.println("Introduce un mensaje");
+        String algo = sc.nextLine();
+        byte [] argo = algo.getBytes();
+        byte [] signature = a5.signData(argo, keys.getPrivate());
+        String  sign = new String(signature);
+        System.out.println(sign);
 
-      //  Signature signature = a5.signData();
 
+        System.out.println(" ");
+        System.out.println("EXERCICI 6");
+        System.out.println(" ");
+
+boolean ValidSign = a5.validateSignature(argo,signature, keys.getPublic());
+        System.out.println("És valid?: "+ValidSign);
 
 
 

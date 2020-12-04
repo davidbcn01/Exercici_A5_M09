@@ -124,6 +124,59 @@ public class a5 {
         }
         return signature;
     }
+
+
+    public static boolean validateSignature(byte[] data, byte[] signature, PublicKey pub) {
+        boolean isValid = false;
+        try {
+            Signature signer = Signature.getInstance("SHA1withRSA");
+            signer.initVerify(pub);
+            signer.update(data);
+            isValid = signer.verify(signature);
+        } catch (Exception ex) {
+            System.err.println("Error validant les dades: " + ex);
+        }
+        return isValid;
+    }
+
+    public byte[][] encryptWrappedData(byte[] data, PublicKey pub) {
+        byte[][] encWrappedData = new byte[2][];
+        try {
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            kgen.init(128);
+            SecretKey sKey = kgen.generateKey(); //clau simetrica
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, sKey);
+            byte[] encMsg = cipher.doFinal(data); // dades
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.WRAP_MODE, pub);
+            byte[] encKey = cipher.wrap(sKey);
+            encWrappedData[0] = encMsg; //dades xifrades
+            encWrappedData[1] = encKey; // dades xifrades
+        } catch (Exception  ex) {
+            System.err.println("Ha succeït un error xifrant: " + ex);
+        }
+        return encWrappedData;
+    }
+    public byte[][] decryptWrappedData(byte[] data, PublicKey pub) {
+        byte[][] decWrappedData = new byte[2][];
+        try {
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            kgen.init(128);
+            SecretKey sKey = kgen.generateKey();
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, sKey);
+            byte[] encMsg = cipher.doFinal(data);
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.UNWRAP_MODE, pub);
+            byte[] encKey = cipher.wrap(sKey);
+            decWrappedData[0] = encMsg;
+            decWrappedData[1] = encKey;
+        } catch (Exception  ex) {
+            System.err.println("Ha succeït un error desxifrant: " + ex);
+        }
+        return decWrappedData;
+    }
 }
 
 
