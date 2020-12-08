@@ -7,7 +7,7 @@ import java.security.cert.CertificateException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
 
         // EXERCICI 1
@@ -68,9 +68,22 @@ public class Main {
         System.out.println("EXERCICI 3");
         System.out.println(" ");
 
+        String rutaCer = "/home/dam2a/Escriptori/Programación/jordi.cer";
+        PublicKey publicKey = a5.getPublicKey(rutaCer);
+
+        System.out.println(publicKey);
+
         System.out.println(" ");
         System.out.println("EXERCICI 4");
         System.out.println(" ");
+
+
+        String ksFilePath = "/home/dam2a/Escriptori/Programación/keystore123.ks";
+        String password = "932@agU11";
+
+        KeyStore keyStore = a5.loadKeyStore(ksFilePath, password);
+
+        System.out.println(a5.getPublicKey(keyStore, "mykey", password));
 
 
         System.out.println(" ");
@@ -91,7 +104,29 @@ public class Main {
 boolean ValidSign = a5.validateSignature(argo,signature, keys.getPublic());
         System.out.println("És valid?: "+ValidSign);
 
+        System.out.println(" ");
+        System.out.println("EXERCICI 2.2");
+        System.out.println(" ");
 
+
+        byte [] data = "missatge".getBytes();
+
+        KeyPair keypair = a5.randomGenerate(1024);
+        PrivateKey privatekey = keypair.getPrivate();
+        PublicKey publickey = keypair.getPublic();
+
+        byte [][] encWrappedData = a5.encryptWrappedData(data, publickey);
+
+        System.out.println("Missatge encriptat: " + new String(encWrappedData[0]));
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println("Clau encriptada " + new String(encWrappedData[1]));
+        System.out.println(" ");
+        System.out.println(" ");
+        System.out.println(" ");
+        byte [] decWrappedData = a5.decryptWrappedData(encWrappedData, privatekey);
+        System.out.println("Missatge original desencriptat " + new String(decWrappedData));
 
     }
 
